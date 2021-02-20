@@ -10,6 +10,7 @@ doc_cluster.pkl
 ward_clusters.png
 model
 my_mrpc_model
+cluster_comment_taptap/data/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
