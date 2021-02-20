@@ -8,6 +8,8 @@ classify_chat/model/
 classify_chat/uwsgi.pid
 doc_cluster.pkl
 ward_clusters.png
+model
+my_mrpc_model
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
