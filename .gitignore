@@ -6,6 +6,8 @@ classify_chat/--ini
 classify_chat/data/
 classify_chat/model/
 classify_chat/uwsgi.pid
+doc_cluster.pkl
+ward_clusters.png
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
