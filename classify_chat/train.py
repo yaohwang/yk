@@ -1,13 +1,20 @@
-from functools  import partial
-from sklearn    import metrics
-from preprocess import *
+# encoding: utf-8
+
+import os
+
+from functools   import partial
+from sklearn     import metrics
+from .preprocess import *
 
 
 def size_mb(docs):
     return sum(len(s.encode('utf-8')) for s in docs) / 1e6
 
 
-data_train = pd.read_excel('./data/dataset_ads-20210113-1-labeled.xlsx')
+path = os.path.dirname(__file__)
+
+
+data_train = pd.read_excel(os.path.join(path, 'data/dataset_ads-20210113-1-labeled.xlsx'))
 data_train = data_train[['label', 'content']]
 data_train = data_train.dropna()
 
@@ -15,7 +22,7 @@ print(data_train.shape)
 data_train.head(3)
 
 
-data_test = pd.read_excel('./data/dataset_ads-20210120-1-labeled.xlsx')
+data_test = pd.read_excel(os.path.join(path, 'data/dataset_ads-20210120-1-labeled.xlsx'))
 data_test = data_test[['label', 'content']]
 data_test.head(3)
 
@@ -61,7 +68,7 @@ print()
 
 feature_names = vectorizer.get_feature_names()
 
-# with open('./model/ads-detect-1-20200125.vocab', 'wb') as f:
+# with open('./model/ads-detect-1-20200125.feature_names', 'wb') as f:
 #     pickle.dump(feature_names, f)
 
 
@@ -94,41 +101,44 @@ print("n_samples: %d, n_features: %d" % X_test.shape)
 print()
 
 
-with open('./model/ads-detect-1-20200125.emb', 'wb') as f:
-    pickle.dump(vectorizer, f)
+# with open('./model/ads-detect-1-20200125.emb', 'wb') as f:
+#     pickle.dump(vectorizer, f)
+# 
+# with open('./model/ads-detect-1-20200125.vocab', 'wb') as f:
+#     pickle.dump(vectorizer.vocabulary_, f)
 
 
-if feature_names: feature_names = np.asarray(feature_names)
-
-
-""" train
-"""
-
-param = {'num_leaves': 2**5-1, 'objective': 'binary'}
-param['metric'] = 'auc'
-
-num_round = 1000
-
-length = np.expand_dims(data_train['content'].apply(len).to_numpy(), axis=1)
-print(X_train.shape)
-print(length.shape)
-X_train = csr_matrix(np.concatenate((X_train.toarray(), length), axis=1))
-X_train.shape
-
-
-length = np.expand_dims(data_test['content'].apply(len).to_numpy(), axis=1)
-print(X_test.shape)
-print(length.shape)
-X_test = csr_matrix(np.concatenate((X_test.toarray(), length), axis=1))
-X_test.shape
-
-train_data = lgb.Dataset(X_train, label=y_train)
-bst = lgb.train(param, train_data, num_round)
-
-y_pred = bst.predict(X_test)
-y_pred = np.where(y_pred > 0.5, 1, -1)
-
-
-print(metrics.classification_report(y_test, y_pred))
-
-bst.save_model('./model/ads-detect-1-20200125.mdl')
+# if feature_names: feature_names = np.asarray(feature_names)
+# 
+# 
+# """ train
+# """
+# 
+# param = {'num_leaves': 2**5-1, 'objective': 'binary'}
+# param['metric'] = 'auc'
+# 
+# num_round = 1000
+# 
+# length = np.expand_dims(data_train['content'].apply(len).to_numpy(), axis=1)
+# print(X_train.shape)
+# print(length.shape)
+# X_train = csr_matrix(np.concatenate((X_train.toarray(), length), axis=1))
+# X_train.shape
+# 
+# 
+# length = np.expand_dims(data_test['content'].apply(len).to_numpy(), axis=1)
+# print(X_test.shape)
+# print(length.shape)
+# X_test = csr_matrix(np.concatenate((X_test.toarray(), length), axis=1))
+# X_test.shape
+# 
+# train_data = lgb.Dataset(X_train, label=y_train)
+# bst = lgb.train(param, train_data, num_round)
+# 
+# y_pred = bst.predict(X_test)
+# y_pred = np.where(y_pred > 0.5, 1, -1)
+# 
+# 
+# print(metrics.classification_report(y_test, y_pred))
+# 
+# bst.save_model('./model/ads-detect-1-20200125.mdl')

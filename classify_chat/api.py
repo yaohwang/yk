@@ -4,12 +4,12 @@ import os
 import sys
 import traceback
 
-from flask         import Flask
-from flask         import request
-from classify_chat import predict
+from flask          import Blueprint
+from flask          import request
+from .classify_chat import predict
 
 
-app = Flask(__name__)
+ads_bp = Blueprint('ads', __name__)
 
 
 def check_params(params):
@@ -35,7 +35,7 @@ def callback(status, message, result):
            }
 
 
-@app.route('/nlp/v1/detect/ads', methods=['POST'])
+@ads_bp.route('/nlp/v1/detect/ads', methods=['POST'])
 def detect_ads():
     status  = 0
     message = ''

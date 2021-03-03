@@ -1,17 +1,40 @@
 # encoding: utf-8
 
+import os
 import pickle
 import numpy as np
 import lightgbm as lgb
 
+# from .preprocess import split2
+# from functools import partial
 from scipy.sparse import csr_matrix
+# from sklearn.feature_extraction.text import TfidfVectorizer
 
 
-with open('./model/ads-detect-1-20200125.emb', 'rb') as f:
-	vectorizer = pickle.load(f)
+path = os.path.dirname(__file__)
 
 
-bst = lgb.Booster(model_file='./model/ads-detect-1-20200125.mdl')
+# with open(os.path.join(path, 'model/ads-detect-1-20200125.emb'), 'rb') as f:
+# 	vectorizer = pickle.load(f)
+
+
+# with open(os.path.join(path, 'model/ads-detect-1-20200125.feature_names'), 'rb') as f:
+#     feature_names = pickle.load(f)
+# 
+# 
+# with open(os.path.join(path, 'model/ads-detect-1-20200125.vocab'), 'rb') as f:
+#     vocabulary = pickle.load(f)
+# 
+# 
+# vectorizer = TfidfVectorizer(sublinear_tf=True,
+#     vocabulary=vocabulary,
+#     tokenizer=partial(split2, feature_names))
+
+
+from .train import vectorizer
+
+
+bst = lgb.Booster(model_file=os.path.join(path, 'model/ads-detect-1-20200125.mdl'))
 
 
 def predict(X):
