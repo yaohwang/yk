@@ -11,6 +11,10 @@ ward_clusters.png
 model
 my_mrpc_model
 cluster_comment_taptap/data/
+-i
+-ini
+log.out
+uwsgi.pid
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
