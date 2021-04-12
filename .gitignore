@@ -14,6 +14,7 @@ cluster_comment_taptap/data/
 -i
 -ini
 log.out
+nohup.out
 uwsgi.pid
 
 # Byte-compiled / optimized / DLL files
