@@ -16,6 +16,8 @@ cluster_comment_taptap/data/
 log.out
 nohup.out
 uwsgi.pid
+.vocab
+.model
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
