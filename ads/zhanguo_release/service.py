@@ -75,3 +75,4 @@ if __name__ == '__main__':
 
     for _ in y_pred:
         print(type(_))
+
