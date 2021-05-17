@@ -9,6 +9,7 @@ classify_chat/uwsgi.pid
 doc_cluster.pkl
 ward_clusters.png
 model
+model_*
 my_mrpc_model
 cluster_comment_taptap/data/
 -i

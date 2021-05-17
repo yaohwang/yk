@@ -101,6 +101,17 @@ def fit(
     if save_directory:
         save_model(model_embedding_1, model_1, save_directory, filename_prefix='1-last')
 
+    # evaluate rule recall
+    logger.info('X normal')
+    print()
+    logger.info('type 1')
+    for _x, _y in zip(X_normal, y_normal):
+        if 1 == _y: print(_x)
+    print()
+    logger.info('type 2')
+    for _x, _y in zip(X_normal, y_normal):
+        if 2 == _y: print(_x)
+
     model_embedding_2, model_2 = fit_model(X_normal, y_normal, **params)
     if save_directory:
         save_model(model_embedding_2, model_2, save_directory, filename_prefix='2-last')
@@ -128,21 +139,45 @@ def evaluate(
 
 
 def fit_evalute(
-    X: List[str],
-    y: List[str],
-    save_directory: str,
+    X: List[str] = None,
+    y: List[str] = None,
+    X_train: List[str] = None,
+    y_train: List[str] = None,
+    X_test: List[str] = None,
+    y_test: List[str] = None,
+    save_directory: str = None,
     filename_prefix: Optional[str] = None,
     test_size: float = 0.3,
     random_state: int = 42,
     params: Dict = {}
 ):
-    X_train, X_test, y_train, y_test = train_test_split(
-        X,
-        y,
-        stratify = y,
-        test_size = test_size,
-        random_state = random_state
-    )
+
+    if X is not None and y is not None:
+        X_train, X_test, y_train, y_test = train_test_split(
+            X,
+            y,
+            stratify = y,
+            test_size = test_size,
+            random_state = random_state
+        )
+    elif X_train is None or y_train is None:
+        raise ValueError(
+            f"X_train or y_train is None."
+            f"(X, y) or (X_train, y_train) should not be None"
+        )   
+
+    _fit_evaluate(X_train, y_train, X_test, y_test, save_directory, filename_prefix, params)
+
+
+def _fit_evaluate(
+    X_train: List[str],
+    y_train: List[str],
+    X_test: List[str] = [],
+    y_test: List[str] = [],
+    save_directory: str = None,
+    filename_prefix: Optional[str] = None,
+    params: Dict = {}
+):
 
     logger.info(f'train shape=({len(X_train)},)')
     logger.info(f' test shape=({len(X_test)},)')
@@ -157,10 +192,14 @@ def fit_evalute(
     evaluate(X_test, y_test, model_embedding_1, model_1, model_embedding_2, model_2)
 
     logger.info('re-fitting')
+    X = X_train + X_test
+    y = y_train + y_test
     fit(X, y, save_directory=save_directory, filename_prefix=filename_prefix, params=params)
 
 
 if __name__ == '__main__':
-    from dataset import X, y
+    # from dataset import X, y
     params = {'num_leaves': 2**5-1, 'objective': 'multiclass', 'num_class': 3, 'num_round': 1000, 'verbose': -1}
-    fit_evalute(X, y, save_directory='./model', params=params)
+    # fit_evalute(X, y, save_directory='./model', params=params)
+    from dataset import X_train, y_train, X_test, y_test
+    fit_evalute(X_train=X_train, y_train=y_train, X_test=X_test, y_test=y_test, save_directory='./model', params=params)
