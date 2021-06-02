@@ -16,6 +16,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 from tokenizer import tokenize
+from tokenizer import convert
 from service import predict
 from rule import rule, is_suspect
 
@@ -54,12 +55,13 @@ def fit(
 ):
 
     def rule_split(
+        X_tokens: List[str],
         X: List[str],
         y: List[int]
     ) -> Tuple[List[str], List[int], List[str], List[int]]:
 
-        y_pred = [rule(x) for x in X]
-        X_rest, y_rest = zip(*[[X[i], y[i]] for i, _ in enumerate(y_pred) if _ is None])
+        y_pred = [rule(tokens, x) for tokens, x in zip(X_tokens, X)]
+        X_rest, y_rest = zip(*[[X_tokens[i], y[i]] for i, _ in enumerate(y_pred) if _ is None])
         logger.info(f'rule, {len(y)-len(y_rest)}')
 
         y_temp = [is_suspect(x) for x in X_rest]
@@ -92,8 +94,8 @@ def fit(
         with (path/name).open('wb') as f:
             dill.dump(model_embedding, f)
 
-    X = [tokenize(x) for x in X]
-    X_suspect, y_suspect, X_normal, y_normal = rule_split(X, y)
+    X_tokens = [tokenize(x) for x in X]
+    X_suspect, y_suspect, X_normal, y_normal = rule_split(X_tokens, X, y)
     logger.info(f'suspect, {Counter(y_suspect)}')
     logger.info(f' normal, {Counter(y_normal)}')
 
@@ -120,6 +122,7 @@ def fit(
 
 
 def evaluate(
+    X_raw: List[str],
     X: List[str],
     y: List[int],
     model_embedding_1: ModelEmbedding,
@@ -131,11 +134,15 @@ def evaluate(
     print(metrics.classification_report(y, y_pred, digits=3))
 
     X_tokens = [tokenize(x) for x in X]
-    for x, x_tokens, _y, _y_pred in zip(X, X_tokens, y, y_pred):
+    for x_raw, x, x_tokens, _y, _y_pred in zip(X_raw, X, X_tokens, y, y_pred):
         if _y != _y_pred:
-            print(f'text: {x}\n tokens: {x_tokens}\n y: {_y}\n y pred: {_y_pred}\n')
+            print(f'raw: {x_raw}\n text: {x}\n tokens: {x_tokens}\n y: {_y}\n y pred: {_y_pred}\n')
             print()
-        
+
+    # 1 and 2 merge
+    _y = [0 if 0==_ else 1 for _ in y]
+    _y_pred = [0 if 0==_ else 1 for _ in y_pred]
+    print(metrics.classification_report(_y, _y_pred, digits=3))
 
 
 def fit_evalute(
@@ -186,10 +193,12 @@ def _fit_evaluate(
     model_embedding_1, model_1, model_embedding_2, model_2 = fit(X_train, y_train, params=params)
 
     logger.info('train evalute')
-    evaluate(X_train, y_train, model_embedding_1, model_1, model_embedding_2, model_2)
+    _X = [convert(x) for x in X_train]
+    evaluate(X_train, _X, y_train, model_embedding_1, model_1, model_embedding_2, model_2)
 
     logger.info('test evaluate')
-    evaluate(X_test, y_test, model_embedding_1, model_1, model_embedding_2, model_2)
+    _X = [convert(x) for x in X_test]
+    evaluate(X_test, _X, y_test, model_embedding_1, model_1, model_embedding_2, model_2)
 
     logger.info('re-fitting')
     X = X_train + X_test

@@ -46,10 +46,10 @@ def predict(
 ) -> List[int]:
 
     def _predict(x: str) -> int:
-        x = tokenize(x)
-        y_pred = rule(x)
+        tokens = tokenize(x)
+        y_pred = rule(tokens, x)
         if y_pred is None:
-            y_pred = predict_model(x, model_embedding_1, model_1) if is_suspect(x) else predict_model(x, model_embedding_2, model_2)
+            y_pred = predict_model(tokens, model_embedding_1, model_1) if is_suspect(tokens) else predict_model(tokens, model_embedding_2, model_2)
         return y_pred
 
     def predict_model(x: str, model_embedding: ModelEmbedding, model: Model) -> int:
