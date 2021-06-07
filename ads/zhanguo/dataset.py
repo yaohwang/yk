@@ -16,6 +16,7 @@ def extract_content(text):
 def load(path_data, rename_columns={}):
     data = pd.read_excel(path_data)
     if rename_columns: data = data.rename(columns=rename_columns)
+    data = data[['content', 'label']]
     data = data.dropna()
     data.label = data.label.astype(int)
     data.content = data.content.astype(str).apply(extract_content)
@@ -73,7 +74,25 @@ data = load(path_data, rename_columns=columns)
 X_train += data['content'].tolist()
 y_train += data['label'].tolist()
 
+# path_data = path_root / 'tw.zhanguo-20210517-1-labeled.xlsx'
+# data = load(path_data)
+# X_test = data['content'].tolist()
+# y_test = data['label'].tolist()
+
+""" model v4
+"""
+
 path_data = path_root / 'tw.zhanguo-20210517-1-labeled.xlsx'
 data = load(path_data)
+X_train += data['content'].tolist()
+y_train += data['label'].tolist()
+
+
+path_data = path_root / 'dl-20210604-1-labeled.xlsx'
+columns={'text':'content'}
+data = load(path_data, rename_columns=columns)
 X_test = data['content'].tolist()
 y_test = data['label'].tolist()
+
+print(len(X_test))
+print(len(y_test))

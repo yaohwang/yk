@@ -65,7 +65,8 @@ if __name__ == '__main__':
 
 	X = ['兄弟，来我的军团不',
 		 '资源爆满了',
-		 '加溦okltgo*同款手u*d就送4020']
+		 '加溦okltgo*同款手u*d就送4020',
+         '进攻了4级蛮族:进攻了4级蛮族']
 
 	y_pred = predict(X)
 	print(y_pred)

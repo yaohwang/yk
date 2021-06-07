@@ -63,9 +63,11 @@ def has_money(x: List[str]) -> bool:
 def rule(tokens: List[str], x: str) -> int:
     pattern_defense = '^防守\[.*\].*的进攻:防守\*.*\*.*的进攻$'
     pattern_attack = '^进攻了\[.*\].*:进攻了\*.*\*.*$'
+    pattern_biaoqingbao = '^biaoqingqxfz_321445821:[0-9]{1,3}$'
 
     if re.match(pattern_defense, x) \
-    or re.match(pattern_attack, x):
+    or re.match(pattern_attack, x) \
+    or re.match(pattern_biaoqingbao, x):
         return 0
 
     pattern_url = '^http[s\\*]{1}://[a-z0-9\\./\\*\-]{1,}$'

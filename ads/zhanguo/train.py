@@ -203,7 +203,8 @@ def _fit_evaluate(
     logger.info('re-fitting')
     X = X_train + X_test
     y = y_train + y_test
-    fit(X, y, save_directory=save_directory, filename_prefix=filename_prefix, params=params)
+    model_embedding_1, model_1, model_embedding_2, model_2 = fit(X, y, save_directory=save_directory, filename_prefix=filename_prefix, params=params)
+    evaluate(X_test, _X, y_test, model_embedding_1, model_1, model_embedding_2, model_2)
 
 
 if __name__ == '__main__':
