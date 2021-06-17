@@ -62,11 +62,15 @@ def has_money(x: List[str]) -> bool:
 
 def rule(tokens: List[str], x: str) -> int:
     pattern_defense = '^防守\[.*\].*的进攻:防守\*.*\*.*的进攻$'
-    pattern_attack = '^进攻了\[.*\].*:进攻了\*.*\*.*$'
+    pattern_attack1 = '^进攻了\[.*\].*:进攻了\*.*\*.*$'
+    pattern_attack2 = '^进攻了[0-9]{1,2}级.*:进攻了[0-9]{1,2}级.*$'
+    pattern_attack3 = '^进攻了.{1,5}[县村]:进攻了.{1,5}[县村]$'
     pattern_biaoqingbao = '^biaoqingqxfz_321445821:[0-9]{1,3}$'
 
     if re.match(pattern_defense, x) \
-    or re.match(pattern_attack, x) \
+    or re.match(pattern_attack1, x) \
+    or re.match(pattern_attack2, x) \
+    or re.match(pattern_attack3, x) \
     or re.match(pattern_biaoqingbao, x):
         return 0
 
@@ -149,3 +153,8 @@ if __name__ == '__main__':
     # print(set(['v', 'q', '微', '群', '扣', '加', '收', '出', '送', '领']))
     # print(set(['岀', '赀', '縁', '[CTA]']))
     # print(set(['v', 'q', '微', '群', '扣', '加', '收', '出', '送', '领']) & set(['岀', '赀', '縁', '[CTA]']))
+
+    from tokenizer import tokenize
+    s = '进攻了弓弦村:进攻了弓弦村'
+    s = '进攻了2级乱军:进攻了2级乱军'
+    print(rule(tokenize(s), s))

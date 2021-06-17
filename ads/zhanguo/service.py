@@ -42,7 +42,8 @@ def predict(
     model_embedding_1: ModelEmbedding = model_embedding_1,
     model_1: Model = model_1,
     model_embedding_2: ModelEmbedding = model_embedding_2,
-    model_2: Model = model_2
+    model_2: Model = model_2,
+    verbose = False
 ) -> List[int]:
 
     def _predict(x: str) -> int:
@@ -58,6 +59,9 @@ def predict(
         y_pred = np.argmax(y_pred, axis=1)[0]
         return y_pred
 
+    if verbose:
+        from tqdm import tqdm
+        X = tqdm(X)
     return [_predict(x) for x in X]
 
 
