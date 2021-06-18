@@ -1,5 +1,6 @@
 # encoding: utf-8
 
+import os
 import dill
 import traceback
 import numpy as np
@@ -8,8 +9,8 @@ import lightgbm as lgb
 from pathlib import Path
 from typing import Optional, Any, List, Tuple
 
-from rule import rule, is_suspect
-from tokenizer import tokenize
+from .rule import rule, is_suspect
+from .tokenizer import tokenize
 
 Model = Any
 ModelEmbedding = Any
@@ -23,7 +24,8 @@ def load_model(
         path = Path(save_directory)
         filename_prefix = filename_prefix if filename_prefix else 'last'
         name = 'ads-%s.mdl' % filename_prefix
-        model = lgb.Booster(model_file=(path/name).as_posix())
+        model_file=(path/name).as_posix()
+        model = lgb.Booster(model_file=model_file)
         name = 'embedding-%s.mdl' % filename_prefix
         with (path/name).open('rb') as f:
             model_embedding = dill.load(f)
@@ -33,8 +35,10 @@ def load_model(
         return None, None
 
 
-model_embedding_1, model_1 = load_model('./model', filename_prefix='1-last')
-model_embedding_2, model_2 = load_model('./model', filename_prefix='2-last')
+path_root = os.path.dirname(__file__)
+path_model = Path(path_root) / 'model'
+model_embedding_1, model_1 = load_model(path_model, filename_prefix='1-last')
+model_embedding_2, model_2 = load_model(path_model, filename_prefix='2-last')
 
 
 def predict(
