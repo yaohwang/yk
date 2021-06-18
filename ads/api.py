@@ -4,16 +4,12 @@ import os
 import sys
 import traceback
 
-from flask          import Blueprint
-from flask          import request
-from .classify_chat import predict
+from flask import Blueprint
+from flask import request
+from .service import predict
 
 
 ads_bp = Blueprint('ads', __name__)
-
-
-def check_params(params):
-    pass
 
 
 def parse_params(params):
@@ -35,15 +31,13 @@ def callback(status, message, result):
            }
 
 
-@ads_bp.route('/nlp/v1/detect/ads', methods=['POST'])
+@ads_bp.route('/nlp/v2/detect/ads', methods=['POST'])
 def detect_ads():
     status  = 0
     message = ''
     result  = {}
 
     try:
-        # get params
-        # print(request.json)
         """
         {
             "texts" : ['测试', ...],
@@ -51,11 +45,8 @@ def detect_ads():
         }
         """
         params = request.get_json()
-        check_params(params)
 
-        # predict
         result = parse_result(params, predict(*parse_params(params)))
-        # callback
         return callback(status, message, result)
 
     except:
