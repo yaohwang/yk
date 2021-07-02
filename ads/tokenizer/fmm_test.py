@@ -54,6 +54,7 @@ if __name__ == '__main__':
     tokenize('加团长徽：15183063671（梦瑶）我啦你们进群，领取对应的礼包码，不来的当机器人踢了')
     tokenize('你加我id')
     tokenize('911eo888')
+    tokenize('微亻言')
 
     print(' add '.center(50, '-'))
     tokenize('怎么加')

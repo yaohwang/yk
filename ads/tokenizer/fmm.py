@@ -31,6 +31,7 @@ from .trie import (
     has,
 )
 
+# TODO: path
 path_dict = '/data2/wangyh/project/yk/ads/tokenizer/dict'
 path_dict_stopwords = '/data2/wangyh/project/yk/ads/tokenizer/dict_stopwords'
 root = trie(path_dict)
@@ -40,7 +41,7 @@ root_stopwords = trie(path_dict_stopwords)
 from .tokenizer_base import normalize
 
 
-# TODO: '亻言', '信'
+# TODO: normalization
 
 
 def verbose(func: Callable) -> Callable:
