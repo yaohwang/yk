@@ -6,8 +6,8 @@ from collections import namedtuple
 from typing import Union, List, Tuple
 from pathlib import Path
 
-Record = namedtuple('Record', ('value', 'alias', 'special'), defaults=(None, None, None))
-Node = namedtuple('Node', ('value', 'alias', 'special', 'children', 'leaf'), defaults=(None, None, None, None, False))
+Record = namedtuple('Record', ('value', 'alias', 'special', 'norm'), defaults=(None, None, None, None))
+Node = namedtuple('Node', ('value', 'alias', 'special', 'norm', 'children', 'leaf'), defaults=(None, None, None, None, None, False))
 
 
 def parse_dicts(path_dicts: str) -> List[Record]:
@@ -42,15 +42,17 @@ def parse_line(line: str) -> Record:
     for (i, _alias) in re.findall(r'(?:\(([0-9]{1,}),\s*\((.*?)\)\))', record[1].strip()):
         alias[int(i)] = _alias.split(',')
 
-	# TODO: replace
     special = re.findall(r'(\[.*\])', record[1].strip())
     special = special[0] if special else None
+
+    norm = re.findall(r'<(.*)>', record[1].strip())
+    norm = norm[0] if norm else None
     
-    return Record(record[0].strip(), alias, special)
+    return Record(record[0].strip(), alias, special, norm)
 
 
 def trie(path_dicts: str) -> Node:
-    root = Node(None, None, None, [])
+    root = Node(None, None, None, None, [])
 
     for record in parse_dicts(path_dicts):
         current_node = root
@@ -60,6 +62,7 @@ def trie(path_dicts: str) -> Node:
             alias = record.alias.get(i,[]) if record.alias is not None else []
             leaf = i == len(record.value)-1
             special = record.special if leaf else None
+            norm = record.norm if leaf else None
 
             if node is not None:
                 # TODO: update new info
@@ -67,13 +70,14 @@ def trie(path_dicts: str) -> Node:
                     old_node = node
                     alias = alias if alias else old_node.alias
                     special = special if special else old_node.special
+                    norm = norm if norm else old_node.norm
                     leaf = leaf if leaf else node.leaf
-                    node = Node(old_node.value, alias, special, old_node.children, leaf)
+                    node = Node(old_node.value, alias, special, norm, old_node.children, leaf)
                     current_node.children.remove(old_node)
                     del old_node
                     current_node.children.append(node)
             else:
-                node = Node(char, alias, special, [], leaf)
+                node = Node(char, alias, special, norm, [], leaf)
                 current_node.children.append(node)
 
             current_node = node
@@ -113,6 +117,8 @@ def find(root: Node, text: Union[str, List[str]]) -> Tuple[str, int]:
     if match_nodes and current_node.leaf:
         if match_nodes[-1].special is not None:
             token = match_nodes[-1].special
+        elif match_nodes[-1].norm is not None:
+            token = match_nodes[-1].norm
         else:
             token = ''.join([n.value for n in match_nodes])
         # print([_.value for _ in match_nodes])

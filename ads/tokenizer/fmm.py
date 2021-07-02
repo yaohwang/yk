@@ -41,9 +41,6 @@ root_stopwords = trie(path_dict_stopwords)
 from .tokenizer_base import normalize
 
 
-# TODO: normalization
-
-
 def verbose(func: Callable) -> Callable:
 
     def inner(text: str) -> List[str]:

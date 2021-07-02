@@ -17,6 +17,7 @@ if __name__ == '__main__':
     tokenize('测试123123123中')
     tokenize('111111')
     tokenize('hi 你也是刚玩的吗')
+    tokenize('add oil')
 
     print(' system info '.center(50, '-'))
     tokenize('进攻了光源村:进攻了光源村')
