@@ -2,5 +2,4 @@
 
 from .fmm import (
     tokenize,
-    convert
 )
