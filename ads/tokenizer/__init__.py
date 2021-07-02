@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-from .tokenizer import (
+from .fmm import (
     tokenize,
     convert
 )

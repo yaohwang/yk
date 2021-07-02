@@ -33,7 +33,7 @@ from .trie import (
     has,
 )
 
-from .tokenizer_base import normalize
+from .base import normalize
 
 
 path_root = Path(os.path.dirname(__file__))
