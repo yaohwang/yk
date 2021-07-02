@@ -58,7 +58,7 @@ def verbose(func: Callable) -> Callable:
 @verbose
 def tokenize(text: str) -> List[str]:
     text = preprocess(text)
-    tokens = full_pattern(text)
+    tokens,  = full_pattern(text)
     if not tokens: tokens = part_pattern(text)
     tokens = postprocess(tokens)
     return tokens
@@ -91,15 +91,15 @@ def preprocess(text: str) -> str:
     return text
 
 
+def _match(funcs: List[Callable], *args) -> Tuple[str, int]:
+    for func in funcs:
+        r = func(*args)
+        if r[0]:
+            return r
+    return r
+
 
 def full_pattern(text: str) -> List[str]:
-
-    # TODO: merge
-    def _match(funcs: List[Callable], text: str) -> List[str]:
-        for func in funcs:
-            tokens = func(text)
-            if tokens:
-                return tokens
 
     funcs = [
         find_systeminfo,
@@ -124,18 +124,6 @@ def part_pattern(text: str) -> List[str]:
 
 
 def _part_pattern(subtext: str) -> Tuple[str, int]:
-
-    # TODO: merge with _match
-    def match(funcs: List[Callable], subtext: str) -> Tuple[str, int]:
-        token, length = None, -1
-        lengths, chars = find_all(subtext)
-        for func in funcs:
-            current_token, current_length = func(subtext, chars, lengths)
-            # print(func, repr(subtext), chars, lengths, current_token, current_length)
-            if current_token is not None and 0 < current_length:
-                return current_token, current_length
-        # print()
-        return token, length
             
     funcs = [
         _part_cn,
@@ -148,17 +136,8 @@ def _part_pattern(subtext: str) -> Tuple[str, int]:
     if token is not None and 0 < length:
         return token, length
 
-    return match(funcs, subtext)
-
-
-def _match(funcs: List[Callable], subtext: str) -> Tuple[str, int]:
-    token, length = None, -1
-    for func in funcs:
-        current_token, current_length = func(subtext)
-        # print(func, subtext, current_token, current_length)
-        if current_token is not None and 0 < current_length:
-            return current_token, current_length
-    return token, length
+    chars, lengths = find_all(subtext)
+    return _match(funcs, subtext, chars, lengths)
 
 
 def _part(subtext: str) -> Tuple[str, int]:
@@ -215,7 +194,6 @@ def _part_char(subtext: str=None, chars: List[str]=None, *args) -> Tuple[str, in
 
 
 def _part_num(subtext: str=None, chars: List[str]=None, *args) -> Tuple[str, int]:
-    # TODO:
     return None, -1
 
 

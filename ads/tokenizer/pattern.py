@@ -69,17 +69,17 @@ pattern_full_systeminfo = '(%s)' % '|'.join([
 
 def find_systeminfo(subtext: str) -> List[str]:
     m = re.match(pattern_full_systeminfo, subtext)
-    return None if not m else ['[SYS]']
+    return (None if not m else ['[SYS]'], )
 
 
 def find_audio(subtext: str) -> List[str]:
     m = re.match(pattern_full_audio, subtext)
-    return None if not m else ['[AUD]']
+    return (None if not m else ['[AUD]'], )
 
 
 def find_url(subtext: str) -> List[str]:
     m = re.match(pattern_full_url, subtext)
-    return None if not m else ['[URL]']
+    return (None if not m else ['[URL]'], )
 
 
 
@@ -165,7 +165,7 @@ pattern_start_emoji = '(^%s)' % '|'.join([
 
 
 def find_all(subtext: str) -> List[str]:
-    return zip(*[(_.end(),_.group()) for _ in re.finditer(pattern_group, subtext)])
+    return zip(*[(_.group(),_.end()) for _ in re.finditer(pattern_group, subtext)])
 
 
 def find_location(subtext: str) -> Tuple[str, int]:
