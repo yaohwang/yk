@@ -4,7 +4,9 @@ import os
 import re
 import opencc
 
+from pathlib import Path
 from typing import List, Callable, Tuple
+
 from .pattern import (
     find_all,
     find_systeminfo,
@@ -31,9 +33,9 @@ from .trie import (
     has,
 )
 
-# TODO: path
-path_dict = '/data2/wangyh/project/yk/ads/tokenizer/dict'
-path_dict_stopwords = '/data2/wangyh/project/yk/ads/tokenizer/dict_stopwords'
+path_root = Path(os.path.dirname(__file__))
+path_dict = path_root/'dict'
+path_dict_stopwords = path_root/'dict_stopwords'
 root = trie(path_dict)
 root_stopwords = trie(path_dict_stopwords)
 # tree(root)
