@@ -33,14 +33,14 @@ from .trie import (
     has,
 )
 
+from .tokenizer_base import normalize
+
+
 path_root = Path(os.path.dirname(__file__))
 path_dict = path_root/'dict'
 path_dict_stopwords = path_root/'dict_stopwords'
 root = trie(path_dict)
 root_stopwords = trie(path_dict_stopwords)
-# tree(root)
-
-from .tokenizer_base import normalize
 
 
 def verbose(func: Callable) -> Callable:
@@ -79,7 +79,6 @@ def preprocess(text: str) -> str:
     text = text.lower()
     text = cc.convert(text)
     text = normalize(text)
-    # text = text.replace('*','')
     text = re.sub('\s', '', text)
 
     funcs = [
@@ -207,7 +206,6 @@ def _part_char(subtext: str=None, chars: List[str]=None, *args) -> Tuple[str, in
 
     if is_char(chars[0]):
         token, idx = find(root, chars[0])
-        # return token, idx+1
         length = idx+1
 
     if token is None:

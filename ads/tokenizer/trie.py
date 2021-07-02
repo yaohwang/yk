@@ -65,7 +65,7 @@ def trie(path_dicts: str) -> Node:
             norm = record.norm if leaf else None
 
             if node is not None:
-                # TODO: update new info
+                # update new info
                 if (not node.alias and alias) or (not node.special and special) or (not node.leaf and leaf):
                     old_node = node
                     alias = alias if alias else old_node.alias

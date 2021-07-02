@@ -59,10 +59,6 @@ pattern_full_attack3 = '^进攻了.{1,5}[县村]:进攻了.{1,5}[县村]$'
 pattern_full_url = '^http[s\\*]{1}://[a-z0-9\\./\\*\-]{1,}$'
 pattern_full_audio = '^{audio:https://qxfzios\-cdn\-hz\.himengyou\.com/\d{4}-\d{2}-\d{2}/\d{4}.(?:mp3|amr)=\d{1}\}$'
 
-# pattern_full_emoji = pattern_full(_pattern_emoji)
-pattern_full_location = pattern_full(_pattern_char)
-pattern_full_contact = pattern_full(_pattern_contact_charnum) # TODO:
-
 pattern_full_systeminfo = '(%s)' % '|'.join([
     pattern_full_defense,
     pattern_full_attack1,
@@ -113,7 +109,6 @@ def remove_duplicates(text: str) -> str:
 
 def divisor(i: int) -> List[int]:
     return [_ for _ in range(2, i//2+1) if 0 == i%_]
-            
 
 
 """ local
@@ -207,17 +202,9 @@ def is_char(subtext: str) -> bool:
     return bool(re.match(pattern_full_char, subtext))
 
 
-# def is_num(subtext: str) -> bool:
-#     return bool(re.match(pattern_full_num, subtext))
-# 
-# 
 def is_charnum(subtext: str) -> bool:
     # need exclude char & num first
     return bool(re.match(pattern_full_charnum, subtext))
-
-
-# def is_cn(subtext: str) -> bool:
-#     return bool(re.match(pattern_full_cn, subtext))
 
 
 def is_punctuation(subtext: str) -> bool:
