@@ -6,6 +6,22 @@ import textwrap
 from typing import List, Tuple
 
 
+special = [ 
+    '[LOC]',
+    '[EMJ]',
+    '[NUM]-1', '[NUM]-2', '[NUM]-3', '[NUM]-4', '[NUM]-5', '[NUM]-6', '[NUM]-7',
+    '[ABU]',
+    '[CTA-M]', '[CTA]',
+    '[TRS]',
+    '[RES]', '[RES-S]',
+    '[VIP]',
+    '[WHO]',
+    '[PLG]',
+    '[OGM]',
+    '[MNY]',
+]
+
+
 """ base
 """
 
@@ -22,7 +38,8 @@ _pattern_contact_charnum = '[a-z0-9\*\-_:]{6,}'
 _pattern_contact_char = '[a-z\*\-_:]{5,}'
 
 _pattern_punctuation = '`~!@#\$%\^&\*\(\)_\-=\[\]\{\}\|\\;:\'",<\.>\?/' \
-                       '·~！@#￥%……&*（）——\-=【】\{\}|、；：「『，。《》、？'
+                       '·~！@#￥%……&*（）——\-=【】\{\}|、；：「『，。《》、？' \
+                       '\s'
 
 
 """ global
@@ -133,9 +150,9 @@ pattern_group = '(%s)' % '|'.join([
     pattern_num_1,
     pattern_num_2,
     pattern_num_3,
-    pattern_num_0,
     pattern_cn,
     pattern_charnum,
+    pattern_num_0,
     pattern_char,
     pattern_punctuation,
 ])
@@ -188,18 +205,27 @@ def find_num(subtext: str) -> Tuple[str, int]:
     return (None, -1) if not m else ('[NUM]-%s' % m.end(), m.end())
 
 
+pattern_full_char = pattern_full(pattern_char)
+pattern_full_charnum = pattern_full(pattern_charnum)
+pattern_full_punctuation = pattern_full(pattern_punctuation)
+
+
 def is_char(subtext: str) -> bool:
-    return bool(re.match(pattern_char, subtext))
+    return bool(re.match(pattern_full_char, subtext))
 
 
 # def is_num(subtext: str) -> bool:
-#     return bool(re.match(pattern_num, subtext))
+#     return bool(re.match(pattern_full_num, subtext))
 # 
 # 
 def is_charnum(subtext: str) -> bool:
     # need exclude char & num first
-    return bool(re.match(pattern_charnum, subtext))
+    return bool(re.match(pattern_full_charnum, subtext))
 
 
 # def is_cn(subtext: str) -> bool:
-#     return bool(re.match(pattern_cn, subtext))
+#     return bool(re.match(pattern_full_cn, subtext))
+
+
+def is_punctuation(subtext: str) -> bool:
+    return bool(re.match(pattern_full_punctuation, subtext))

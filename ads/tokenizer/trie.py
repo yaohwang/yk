@@ -81,6 +81,17 @@ def trie(path_dicts: str) -> Node:
     return root
 
 
+def has(root: Node, text: Union[str, List[str]]) -> bool:
+    current_node = root
+    for char in text:
+        current_node = find_in_children(current_node, char)
+        if current_node is None:
+            return False
+    if current_node.leaf:
+        return True
+    return False
+
+
 def find(root: Node, text: Union[str, List[str]]) -> Tuple[str, int]:
     token = None
     idx = -1

@@ -17,24 +17,27 @@ from .pattern import (
     extract_schedulemsg,
     is_char,
     is_charnum,
+    is_punctuation,
     remove_duplicates,
+    special,
 )
 
 from .trie import (
     trie,
     find,
     tree,
+    has,
 )
 
 path_dict = '/data2/wangyh/project/yk/ads/tokenizer/dict'
+path_dict_stopwords = '/data2/wangyh/project/yk/ads/tokenizer/dict_stopwords'
 root = trie(path_dict)
+root_stopwords = trie(path_dict_stopwords)
 # tree(root)
 
 from .tokenizer_base import normalize
 
 
-# TODO: stop words
-# TODO: drop whitespace or split by it
 # TODO: url
 # TODO: audio
 
@@ -56,6 +59,7 @@ def tokenize(text: str) -> List[str]:
     text = preprocess(text)
     tokens = full_pattern(text)
     if not tokens: tokens = part_pattern(text)
+    tokens = postprocess(tokens)
     return tokens
 
 
@@ -114,7 +118,6 @@ def _part_pattern(subtext: str) -> Tuple[str, int]:
         for func in funcs:
             current_token, current_length = func(subtext, chars, lengths)
             # print(func, repr(subtext), chars, lengths, current_token, current_length)
-            # if current_token is not None and length < current_length:
             if current_token is not None and 0 < current_length:
                 return current_token, current_length
         # print()
@@ -166,7 +169,6 @@ def _part_cn(subtext: str=None, chars: List[str]=None, lengths: List[int]=[]) ->
 
 
 def _part_charnum(subtext: str=None, chars: List[str]=None, *args) -> Tuple[str, int]:
-    # TODO:
     funcs = [
         find_contact_charnum,
         find_num,
@@ -174,14 +176,18 @@ def _part_charnum(subtext: str=None, chars: List[str]=None, *args) -> Tuple[str,
 
     base = remove_duplicates(chars[0])
     _subtext = remove_duplicates(chars[0]) if is_charnum(chars[0]) else subtext
-    token, length = _match(funcs, _subtext)
-    length = len(chars[0]) if is_charnum(chars[0]) else length
-    
+
+    token, idx = find(root, _subtext)
+    length = idx+1
+
+    if token is None:
+        token, length = _match(funcs, _subtext)
+        length = len(chars[0]) if is_charnum(chars[0]) else length
+
     return token, length
 
 
 def _part_char(subtext: str=None, chars: List[str]=None, *args) -> Tuple[str, int]:
-    # TODO:
     token, lenght = None, -1
 
     if is_char(chars[0]):
@@ -198,3 +204,23 @@ def _part_char(subtext: str=None, chars: List[str]=None, *args) -> Tuple[str, in
 def _part_num(subtext: str=None, chars: List[str]=None, *args) -> Tuple[str, int]:
     # TODO:
     return None, -1
+
+
+def postprocess(tokens: List[str]) -> List[str]:
+    # merge single char or num
+    cache = []
+    final = []
+    for token in tokens:
+        if token in special or not is_charnum(token) or 1 < len(token):
+            if 1 == len(cache):
+                final.append(cache)
+            elif 1 < len(cache):
+                final.append(''.join(cache))
+            final.append(token)
+            cache = []
+        else:
+            cache.append(token)
+    if cache: final.append(''.join(cache))
+    # drop stop words
+    final = [token for token in final if not has(root_stopwords, token) and not is_punctuation(token)]
+    return final

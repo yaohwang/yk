@@ -58,7 +58,7 @@ if __name__ == '__main__':
     print(' add '.center(50, '-'))
     tokenize('怎么加')
     tokenize('我加你')
-    tokenize('hi, 加入我们，一起玩吗') # TODO: hi
+    tokenize('hi, 加入我们，一起玩吗')
     tokenize('你好呀，请问有机会加入我们吗')
     tokenize('我想加入你们')
 
