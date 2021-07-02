@@ -8,6 +8,8 @@ from typing import List, Callable, Tuple
 from .pattern import (
     find_all,
     find_systeminfo,
+    find_audio,
+    find_url,
     find_location,
     find_emoji,
     find_contact_charnum,
@@ -38,8 +40,7 @@ root_stopwords = trie(path_dict_stopwords)
 from .tokenizer_base import normalize
 
 
-# TODO: url
-# TODO: audio
+# TODO: '亻言', '信'
 
 
 def verbose(func: Callable) -> Callable:
@@ -93,7 +94,21 @@ def preprocess(text: str) -> str:
 
 
 def full_pattern(text: str) -> List[str]:
-    return find_systeminfo(text)
+
+    # TODO: merge
+    def _match(funcs: List[Callable], text: str) -> List[str]:
+        for func in funcs:
+            tokens = func(text)
+            if tokens:
+                return tokens
+
+    funcs = [
+        find_systeminfo,
+        find_audio,
+        find_url,
+    ]
+
+    return _match(funcs, text)
 
 
 def part_pattern(text: str) -> List[str]:

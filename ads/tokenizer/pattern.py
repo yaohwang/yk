@@ -19,6 +19,8 @@ special = [
     '[PLG]',
     '[OGM]',
     '[MNY]',
+    '[URL]',
+    '[AUD]',
 ]
 
 
@@ -61,7 +63,7 @@ pattern_full_audio = '^{audio:https://qxfzios\-cdn\-hz\.himengyou\.com/\d{4}-\d{
 pattern_full_location = pattern_full(_pattern_char)
 pattern_full_contact = pattern_full(_pattern_contact_charnum) # TODO:
 
-pattern_systeminfo = '(%s)' % '|'.join([
+pattern_full_systeminfo = '(%s)' % '|'.join([
     pattern_full_defense,
     pattern_full_attack1,
     pattern_full_attack2,
@@ -69,28 +71,19 @@ pattern_systeminfo = '(%s)' % '|'.join([
 ])
 
 
-# def is_full_sys(text: str) -> bool:
-#     return bool(re.match(pattern_full_defense)) \
-#         or bool(re.match(pattern_full_attack1)) \
-#         or bool(re.match(pattern_full_attack2)) \
-#         or bool(re.match(pattern_full_attack3)) \
-# 
-# 
-# # def is_full_emoji(text: str) -> bool:
-# #    return bool(re.match(pattern_full_emoji))
-# 
-# 
-# def is_full_contact(text: str) -> bool:
-#     return bool(re.match(pattern_full_contact))
-# 
-# 
-# def is_full_audio(text: str) -> bool:
-#     return bool(re.match(pattern_full_audio))
-
-
 def find_systeminfo(subtext: str) -> List[str]:
-    m = re.match(pattern_systeminfo, subtext)
+    m = re.match(pattern_full_systeminfo, subtext)
     return None if not m else ['[SYS]']
+
+
+def find_audio(subtext: str) -> List[str]:
+    m = re.match(pattern_full_audio, subtext)
+    return None if not m else ['[AUD]']
+
+
+def find_url(subtext: str) -> List[str]:
+    m = re.match(pattern_full_url, subtext)
+    return None if not m else ['[URL]']
 
 
 

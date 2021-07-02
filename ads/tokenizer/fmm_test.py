@@ -95,3 +95,9 @@ if __name__ == '__main__':
     tokenize('cnm')
     tokenize('cnmlgb')
     tokenize('cnmlgbww')
+
+    print(' audio '.center(50, '-'))
+    tokenize('{audio:https://qxfzios-cdn-hz.himengyou.com/2021-06-08/2536.amr=5}')
+
+    print(' url '.center(50, '-'))
+    tokenize('https://baike.baidu.com')
