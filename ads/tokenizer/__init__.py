@@ -3,3 +3,11 @@
 from .fmm import (
     tokenize,
 )
+
+from .special import (
+    special,
+    specialnum,
+    special0,
+    special1,
+    special2,
+)

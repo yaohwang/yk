@@ -4,24 +4,7 @@ import re
 import textwrap
 
 from typing import List, Tuple
-
-
-special = [ 
-    '[LOC]',
-    '[EMJ]',
-    '[NUM]-1', '[NUM]-2', '[NUM]-3', '[NUM]-4', '[NUM]-5', '[NUM]-6', '[NUM]-7',
-    '[ABU]',
-    '[CTA-M]', '[CTA]',
-    '[TRS]',
-    '[RES]', '[RES-S]',
-    '[VIP]',
-    '[WHO]',
-    '[PLG]',
-    '[OGM]',
-    '[MNY]',
-    '[URL]',
-    '[AUD]',
-]
+from .special import special
 
 
 """ base
@@ -69,17 +52,17 @@ pattern_full_systeminfo = '(%s)' % '|'.join([
 
 def find_systeminfo(subtext: str) -> List[str]:
     m = re.match(pattern_full_systeminfo, subtext)
-    return (None if not m else ['[SYS]'], )
+    return (None if not m else [special.SYS], )
 
 
 def find_audio(subtext: str) -> List[str]:
     m = re.match(pattern_full_audio, subtext)
-    return (None if not m else ['[AUD]'], )
+    return (None if not m else [special.AUD], )
 
 
 def find_url(subtext: str) -> List[str]:
     m = re.match(pattern_full_url, subtext)
-    return (None if not m else ['[URL]'], )
+    return (None if not m else [special.URL], )
 
 
 
@@ -170,22 +153,22 @@ def find_all(subtext: str) -> List[str]:
 
 def find_location(subtext: str) -> Tuple[str, int]:
     m = re.match(pattern_start_location, subtext)
-    return (None, -1) if not m else ('[LOC]', m.end())
+    return (None, -1) if not m else (special.LOC, m.end())
 
 
 def find_emoji(subtext: str) -> Tuple[str, int]:
     m = re.match(pattern_start_emoji, subtext)
-    return (None, -1) if not m else ('[EMJ]', m.end())
+    return (None, -1) if not m else (special.EMJ, m.end())
 
 
 def find_contact_charnum(subtext: str) -> Tuple[str, int]:
     m = re.match(pattern_start_contact_charnum, subtext)
-    return (None, -1) if not m else ('[CTA]', m.end())
+    return (None, -1) if not m else (special.CTA, m.end())
 
 
 def find_contact_char(subtext: str) -> Tuple[str, int]:
     m = re.match(pattern_start_contact_char, subtext)
-    return (None, -1) if not m else ('[CTA]', m.end())
+    return (None, -1) if not m else (special.CTA, m.end())
 
 
 def find_num(subtext: str) -> Tuple[str, int]:

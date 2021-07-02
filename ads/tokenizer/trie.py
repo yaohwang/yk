@@ -9,6 +9,8 @@ from pathlib import Path
 Record = namedtuple('Record', ('value', 'alias', 'special', 'norm'), defaults=(None, None, None, None))
 Node = namedtuple('Node', ('value', 'alias', 'special', 'norm', 'children', 'leaf'), defaults=(None, None, None, None, None, False))
 
+# TODO: check special when trie create
+
 
 def parse_dicts(path_dicts: str) -> List[Record]:
     path = Path(path_dicts)
