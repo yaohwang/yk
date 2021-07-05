@@ -5,6 +5,7 @@ import re
 from typing import List
 
 from ..tokenizer import (
+    special,
     specialnum,
     special0,
     special1,
@@ -48,7 +49,7 @@ def rule_predict(tokens: List[str]) -> int:
 
 
 
-def rule_suspect(x: List[str]) -> bool:
+def rule_suspect(tokens: List[str]) -> bool:
 
     def suspect(token: str) -> bool:
         return token in specialnum \
@@ -56,7 +57,7 @@ def rule_suspect(x: List[str]) -> bool:
             or token in special2 \
             or token in ['收','送', '领', '缺', '工作室', '挂', '带队']
 
-    for token in x:
+    for token in tokens:
         if suspect(token):
             return True
     return False

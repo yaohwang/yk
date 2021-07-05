@@ -33,7 +33,7 @@ def parse_dict(path_dict: Union[str, Path]) -> List[Record]:
 def parse_line(line: str) -> Record:
     """
     word, alias
-    军团, [SPECIAL-TOKEN], (0, (均,君))
+    军团, [SPECIAL-TOKEN], (0, (均,君)), <工会>
     """
     record = line.split(',', 1)
 

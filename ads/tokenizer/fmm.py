@@ -55,7 +55,7 @@ def verbose(func: Callable) -> Callable:
     return inner
 
 
-@verbose
+# @verbose
 def tokenize(text: str) -> List[str]:
     text = preprocess(text)
     tokens,  = full_pattern(text)
@@ -204,7 +204,7 @@ def postprocess(tokens: List[str]) -> List[str]:
     for token in tokens:
         if token in special or not is_charnum(token) or 1 < len(token):
             if 1 == len(cache):
-                final.append(cache)
+                final.extend(cache)
             elif 1 < len(cache):
                 final.append(''.join(cache))
             final.append(token)

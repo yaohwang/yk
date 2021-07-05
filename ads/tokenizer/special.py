@@ -22,6 +22,7 @@ Special = namedtuple('Special', [
     'URL',
     'AUD',
     'HAO',
+    'SYS',
 ],
 defaults=[
     '[NUM]-1', '[NUM]-2', '[NUM]-3', '[NUM]-4', '[NUM]-5', '[NUM]-6', '[NUM]-7',
@@ -40,6 +41,7 @@ defaults=[
     '[URL]',
     '[AUD]',
     '[HAO]',
+    '[SYS]',
 ])
 
 special = Special()

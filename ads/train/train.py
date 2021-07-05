@@ -18,37 +18,21 @@ from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 from ..tokenizer import tokenize
-from ..tokenizer import convert
 from ..service import predict
-from ..rule import rule, is_suspect
+from ..rule import rule_predict, rule_suspect
 
+
+Sentence = str
+Tokens = List[str]
+Label = int
 Model = Any
 ModelEmbedding = Any
 
 
-def fit_embedding_tfidf(
-    X: List[str],
-    tokenizer=lambda x: x
-) -> Tuple[scipy.sparse.csr_matrix, ModelEmbedding]:
-    # TODO: params
-    embedding = TfidfVectorizer(lowercase=False, sublinear_tf=True, tokenizer=tokenizer)
-    X_ = embedding.fit_transform(X)
-    return X_, embedding
-
-
-def fit_lgb(
-    X: List[str],
-    y: List[int],
-    **params
-) -> Model:
-    num_round = params.pop('num_round', 1000)
-    model = lgb.train(params, lgb.Dataset(X, label=y), num_round)
-    return model
-
 
 def fit(
-    X: List[str],
-    y: List[int],
+    X: List[Sentence],
+    y: List[Label],
     save_directory: Optional[str] = None,
     filename_prefix: Optional[str] = None,
     embedding_type: str = 'tfidf',
@@ -57,23 +41,22 @@ def fit(
 ):
 
     def rule_split(
-        X_tokens: List[str],
-        X: List[str],
-        y: List[int]
-    ) -> Tuple[List[str], List[int], List[str], List[int]]:
+        X_tokens: List[Tokens],
+        y: List[Label]
+    ) -> Tuple[List[Tokens], List[Label], List[Tokens], List[Label]]:
 
-        y_pred = [rule(tokens, x) for tokens, x in zip(X_tokens, X)]
-        X_rest, y_rest = zip(*[[X_tokens[i], y[i]] for i, _ in enumerate(y_pred) if _ is None])
-        logger.info(f'rule, {len(y)-len(y_rest)}')
+        y_pred = [rule_predict(tokens) for tokens in X_tokens]
+        X_tokens_rest, y_rest = zip(*[[X_tokens[i], y[i]] for i, _ in enumerate(y_pred) if _ is None])
+        logger.info(f'rule predict, {len(y)-len(y_rest)}')
 
-        y_temp = [is_suspect(x) for x in X_rest]
-        X_suspect, y_suspect = zip(*[[X_rest[i], y_rest[i]] for i, _ in enumerate(y_temp) if _])
-        X_normal, y_normal = zip(*[[X_rest[i], y_rest[i]] for i, _ in enumerate(y_temp) if not _])
-        return X_suspect, list(y_suspect), X_normal, list(y_normal)
+        y_temp = [rule_suspect(tokens) for tokens in X_tokens_rest]
+        X_tokens_suspect, y_suspect = zip(*[[X_tokens_rest[i], y_rest[i]] for i, _ in enumerate(y_temp) if _])
+        X_tokens_normal, y_normal = zip(*[[X_tokens_rest[i], y_rest[i]] for i, _ in enumerate(y_temp) if not _])
+        return X_tokens_suspect, list(y_suspect), X_tokens_normal, list(y_normal)
 
     def fit_model(
-        X: List[str],
-        y: List[int],
+        X: List[Tokens],
+        y: List[Label],
         **params
     ) -> Tuple[ModelEmbedding, Model]:
         if 'tfidf' == embedding_type:
@@ -96,12 +79,12 @@ def fit(
         with (path/name).open('wb') as f:
             dill.dump(model_embedding, f)
 
-    X_tokens = [tokenize(x) for x in X]
-    X_suspect, y_suspect, X_normal, y_normal = rule_split(X_tokens, X, y)
+    X_tokens = [tokenize(str(x)) for x in X]
+    X_tokens_suspect, y_suspect, X_tokens_normal, y_normal = rule_split(X_tokens, y)
     logger.info(f'suspect, {Counter(y_suspect)}')
     logger.info(f' normal, {Counter(y_normal)}')
 
-    model_embedding_1, model_1 = fit_model(X_suspect, y_suspect, **params)
+    model_embedding_1, model_1 = fit_model(X_tokens_suspect, y_suspect, **params)
     if save_directory:
         save_model(model_embedding_1, model_1, save_directory, filename_prefix='1-last')
 
@@ -109,24 +92,44 @@ def fit(
     logger.info('X normal')
     print()
     logger.info('type 1')
-    for _x, _y in zip(X_normal, y_normal):
+    for _x, _y in zip(X_tokens_normal, y_normal):
         if 1 == _y: print(_x)
     print()
     logger.info('type 2')
-    for _x, _y in zip(X_normal, y_normal):
+    for _x, _y in zip(X_tokens_normal, y_normal):
         if 2 == _y: print(_x)
 
-    model_embedding_2, model_2 = fit_model(X_normal, y_normal, **params)
+    model_embedding_2, model_2 = fit_model(X_tokens_normal, y_normal, **params)
     if save_directory:
         save_model(model_embedding_2, model_2, save_directory, filename_prefix='2-last')
 
     return model_embedding_1, model_1, model_embedding_2, model_2
 
 
+
+def fit_embedding_tfidf(
+    X: List[Tokens],
+    tokenizer=lambda x: x
+) -> Tuple[scipy.sparse.csr_matrix, ModelEmbedding]:
+    # TODO: params
+    embedding = TfidfVectorizer(lowercase=False, sublinear_tf=True, tokenizer=tokenizer)
+    X_ = embedding.fit_transform(X)
+    return X_, embedding
+
+
+def fit_lgb(
+    X: List[Tokens],
+    y: List[Label],
+    **params
+) -> Model:
+    num_round = params.pop('num_round', 1000)
+    model = lgb.train(params, lgb.Dataset(X, label=y), num_round)
+    return model
+
+
 def evaluate(
-    X_raw: List[str],
-    X: List[str],
-    y: List[int],
+    X: List[Sentence],
+    y: List[Label],
     model_embedding_1: ModelEmbedding,
     model_1: Model,
     model_embedding_2: ModelEmbedding,
@@ -136,9 +139,9 @@ def evaluate(
     print(metrics.classification_report(y, y_pred, digits=3))
 
     X_tokens = [tokenize(x) for x in X]
-    for x_raw, x, x_tokens, _y, _y_pred in zip(X_raw, X, X_tokens, y, y_pred):
+    for x, x_tokens, _y, _y_pred in zip(X, X_tokens, y, y_pred):
         if _y != _y_pred:
-            print(f'raw: {x_raw}\n text: {x}\n tokens: {x_tokens}\n y: {_y}\n y pred: {_y_pred}\n')
+            print(f'text: {x}\n tokens: {x_tokens}\n y: {_y}\n y pred: {_y_pred}\n')
             print()
 
     # 1 and 2 merge
@@ -148,12 +151,12 @@ def evaluate(
 
 
 def fit_evalute(
-    X: List[str] = None,
-    y: List[str] = None,
-    X_train: List[str] = None,
-    y_train: List[str] = None,
-    X_test: List[str] = None,
-    y_test: List[str] = None,
+    X: List[Sentence] = None,
+    y: List[Label] = None,
+    X_train: List[Sentence] = None,
+    y_train: List[Label] = None,
+    X_test: List[Sentence] = None,
+    y_test: List[Label] = None,
     save_directory: str = None,
     filename_prefix: Optional[str] = None,
     test_size: float = 0.3,
@@ -179,10 +182,10 @@ def fit_evalute(
 
 
 def _fit_evaluate(
-    X_train: List[str],
-    y_train: List[str],
-    X_test: List[str] = [],
-    y_test: List[str] = [],
+    X_train: List[Sentence],
+    y_train: List[Label],
+    X_test: List[Sentence] = [],
+    y_test: List[Label] = [],
     save_directory: str = None,
     filename_prefix: Optional[str] = None,
     params: Dict = {}
@@ -195,18 +198,16 @@ def _fit_evaluate(
     model_embedding_1, model_1, model_embedding_2, model_2 = fit(X_train, y_train, params=params)
 
     logger.info('train evalute')
-    _X = [convert(x) for x in X_train]
-    evaluate(X_train, _X, y_train, model_embedding_1, model_1, model_embedding_2, model_2)
+    evaluate(X_train, y_train, model_embedding_1, model_1, model_embedding_2, model_2)
 
     logger.info('test evaluate')
-    _X = [convert(x) for x in X_test]
-    evaluate(X_test, _X, y_test, model_embedding_1, model_1, model_embedding_2, model_2)
+    evaluate(X_test, y_test, model_embedding_1, model_1, model_embedding_2, model_2)
 
     logger.info('re-fitting')
     X = X_train + X_test
     y = y_train + y_test
     model_embedding_1, model_1, model_embedding_2, model_2 = fit(X, y, save_directory=save_directory, filename_prefix=filename_prefix, params=params)
-    evaluate(X_test, _X, y_test, model_embedding_1, model_1, model_embedding_2, model_2)
+    evaluate(X_test, y_test, model_embedding_1, model_1, model_embedding_2, model_2)
 
 
 if __name__ == '__main__':

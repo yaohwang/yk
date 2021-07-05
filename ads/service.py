@@ -9,7 +9,7 @@ import lightgbm as lgb
 from pathlib import Path
 from typing import Optional, Any, List, Tuple
 
-from .rule import rule, is_suspect
+from .rule import rule_predict, rule_suspect
 from .tokenizer import tokenize
 
 Model = Any
@@ -52,9 +52,9 @@ def predict(
 
     def _predict(x: str) -> int:
         tokens = tokenize(x)
-        y_pred = rule(tokens, x)
+        y_pred = rule_predict(tokens)
         if y_pred is None:
-            y_pred = predict_model(tokens, model_embedding_1, model_1) if is_suspect(tokens) else predict_model(tokens, model_embedding_2, model_2)
+            y_pred = predict_model(tokens, model_embedding_1, model_1) if rule_suspect(tokens) else predict_model(tokens, model_embedding_2, model_2)
         return y_pred
 
     def predict_model(x: str, model_embedding: ModelEmbedding, model: Model) -> int:
