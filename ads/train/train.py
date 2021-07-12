@@ -10,7 +10,7 @@ from typing import Union, Optional, Dict, List, Tuple, Any
 from pathlib import Path
 from collections import Counter
 
-from .logger import logging
+from ..logger import logging
 logger = logging.getLogger(__name__)
 
 from sklearn import metrics
@@ -41,18 +41,19 @@ def fit(
 ):
 
     def rule_split(
+        X: List[Sentence],
         X_tokens: List[Tokens],
         y: List[Label]
     ) -> Tuple[List[Tokens], List[Label], List[Tokens], List[Label]]:
 
-        y_pred = [rule_predict(tokens) for tokens in X_tokens]
-        X_tokens_rest, y_rest = zip(*[[X_tokens[i], y[i]] for i, _ in enumerate(y_pred) if _ is None])
+        y_rule_pred = [rule_predict(tokens) for tokens in X_tokens]
+        X_rest, X_tokens_rest, y_rest = zip(*[[X[i], X_tokens[i], y[i]] for i, _ in enumerate(y_rule_pred) if _ is None])
         logger.info(f'rule predict, {len(y)-len(y_rest)}')
 
         y_temp = [rule_suspect(tokens) for tokens in X_tokens_rest]
-        X_tokens_suspect, y_suspect = zip(*[[X_tokens_rest[i], y_rest[i]] for i, _ in enumerate(y_temp) if _])
-        X_tokens_normal, y_normal = zip(*[[X_tokens_rest[i], y_rest[i]] for i, _ in enumerate(y_temp) if not _])
-        return X_tokens_suspect, list(y_suspect), X_tokens_normal, list(y_normal)
+        X_suspect, X_tokens_suspect, y_suspect = zip(*[[X_rest[i], X_tokens_rest[i], y_rest[i]] for i, _ in enumerate(y_temp) if _])
+        X_normal, X_tokens_normal, y_normal = zip(*[[X_rest[i], X_tokens_rest[i], y_rest[i]] for i, _ in enumerate(y_temp) if not _])
+        return X_suspect, X_tokens_suspect, list(y_suspect), X_normal, X_tokens_normal, list(y_normal)
 
     def fit_model(
         X: List[Tokens],
@@ -80,7 +81,7 @@ def fit(
             dill.dump(model_embedding, f)
 
     X_tokens = [tokenize(str(x)) for x in X]
-    X_tokens_suspect, y_suspect, X_tokens_normal, y_normal = rule_split(X_tokens, y)
+    X_suspect, X_tokens_suspect, y_suspect, X_normal, X_tokens_normal, y_normal = rule_split(X, X_tokens, y)
     logger.info(f'suspect, {Counter(y_suspect)}')
     logger.info(f' normal, {Counter(y_normal)}')
 
@@ -92,12 +93,12 @@ def fit(
     logger.info('X normal')
     print()
     logger.info('type 1')
-    for _x, _y in zip(X_tokens_normal, y_normal):
-        if 1 == _y: print(_x)
+    for _x_raw, _x, _y in zip(X_normal, X_tokens_normal, y_normal):
+        if 1 == _y: print(_x_raw, _x)
     print()
     logger.info('type 2')
-    for _x, _y in zip(X_tokens_normal, y_normal):
-        if 2 == _y: print(_x)
+    for _x_raw, _x, _y in zip(X_normal, X_tokens_normal, y_normal):
+        if 2 == _y: print(_x_raw, _x)
 
     model_embedding_2, model_2 = fit_model(X_tokens_normal, y_normal, **params)
     if save_directory:

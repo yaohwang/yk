@@ -12,7 +12,7 @@ Special = namedtuple('Special', [
     'ABU',
     'CTAM', 'CTA',
     'ADD',
-    'TRS', 'TRS3RD',
+    'TRS', 'TRS3RD', 'TRSBHV', 'TRSSUS',
     'RES', 'RESS',
     'VIP',
     'WHO',
@@ -23,6 +23,11 @@ Special = namedtuple('Special', [
     'AUD',
     'HAO',
     'SYS',
+    'SALE',
+    'TSP',
+    'NEED',
+    'HVN',
+    'FIT',
 ],
 defaults=[
     '[NUM]-1', '[NUM]-2', '[NUM]-3', '[NUM]-4', '[NUM]-5', '[NUM]-6', '[NUM]-7',
@@ -31,7 +36,7 @@ defaults=[
     '[ABU]',
     '[CTA-M]', '[CTA]',
     '[ADD]',
-    '[TRS]', '[TRS-3RD]',
+    '[TRS]', '[TRS-3RD]', '[TRS-BHV]', '[TRS-SUS]',
     '[RES]', '[RES-S]',
     '[VIP]',
     '[WHO]',
@@ -42,6 +47,11 @@ defaults=[
     '[AUD]',
     '[HAO]',
     '[SYS]',
+    '[SALE]',
+    '[TSP]',
+    '[NEED]',
+    '[HVN]',
+    '[FIT]',
 ])
 
 special = Special()
@@ -64,10 +74,10 @@ specialnum = SpecialNum()
 """
 
 Special0 = namedtuple('Special0', [
-	'EMJ', 'NUM1', 'NUM2', 'NUM3', 'NUM4', 'NUM5', 'NUM6', 'NUM7', 'ABU', 'WHO', 'AUD',
+	'EMJ', 'NUM1', 'NUM2', 'NUM3', 'NUM4', 'NUM5', 'NUM6', 'NUM7', 'ABU', 'WHO', 'AUD', 'HVN', 'FIT',
 ],
 defaults=[
-	special.EMJ, special.NUM1, special.NUM2, special.NUM3, special.NUM4, special.NUM5, special.NUM6, special.NUM7, special.ABU, special.WHO, special.AUD,
+	special.EMJ, special.NUM1, special.NUM2, special.NUM3, special.NUM4, special.NUM5, special.NUM6, special.NUM7, special.ABU, special.WHO, special.AUD, special.HVN, special.FIT,
 ])
 
 special0 = Special0()
@@ -77,10 +87,10 @@ special0 = Special0()
 """
 
 Special1 = namedtuple('Special1', [
-	'OGM', 'TRS3RD',
+	'OGM', 'TRS3RD', 'TSP',
 ],
 defaults=[
-	special.OGM, special.TRS3RD,
+	special.OGM, special.TRS3RD, special.TSP,
 ])
 
 special1 = Special1()
@@ -90,13 +100,26 @@ special1 = Special1()
 """
 
 Special2 = namedtuple('Special2', [
-	'LOC', 'CTAM', 'CTA', 'TRS', 'RES', 'RESS', 'VIP', 'PLG', 'MNY', 'URL', 'ADD', 'HAO',
+	'LOC', 'CTAM', 'CTA', 'TRS', 'TRSBHV', 'TRSSUS', 'RES', 'RESS', 'VIP', 'PLG', 'MNY', 'URL', 'ADD', 'HAO', 'SALE', 'NEED',
 ],
 defaults=[
-	special.LOC, special.CTAM, special.CTA, special.TRS, special.RES, special.RESS, special.VIP, special.PLG, special.MNY, special.URL, special.ADD, special.HAO,
+	special.LOC, special.CTAM, special.CTA, special.TRS, special.TRSBHV, special.TRSSUS, special.RES, special.RESS, special.VIP, special.PLG, special.MNY, special.URL, special.ADD, special.HAO, special.SALE, special.NEED,
 ])
 
 special2 = Special2()
+
+
+""" special risk
+"""
+
+SpecialRisk = namedtuple('SpecialRisk', [
+	'OGM', 'TRS3RD', 'TSP', 'TRS', 'TRSBHV', 'TRSSUS', 'RES', 'VIP', 'PLG', 'MNY', 'URL', 'HAO', 'SALE',
+],
+defaults=[
+	special.OGM, special.TRS3RD, special.TSP, special.TRS, special.TRSBHV, special.TRSSUS, special.RES, special.VIP, special.PLG, special.MNY, special.URL, special.HAO, special.SALE,
+])
+
+specialrisk = SpecialRisk()
 
 
 def pprint(nt):

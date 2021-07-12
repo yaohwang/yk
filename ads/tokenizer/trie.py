@@ -5,6 +5,9 @@ import re
 from collections import namedtuple
 from typing import Union, List, Tuple
 from pathlib import Path
+from .special import special as spe
+from ..logger import logging
+logger = logging.getLogger(__name__)
 
 Record = namedtuple('Record', ('value', 'alias', 'special', 'norm'), defaults=(None, None, None, None))
 Node = namedtuple('Node', ('value', 'alias', 'special', 'norm', 'children', 'leaf'), defaults=(None, None, None, None, None, False))
@@ -46,6 +49,12 @@ def parse_line(line: str) -> Record:
 
     special = re.findall(r'(\[.*\])', record[1].strip())
     special = special[0] if special else None
+    if special: 
+        try:
+            assert(special in spe)
+        except:
+            logger.debug(special)
+            raise ValueError(f'{special} not in special ')
 
     norm = re.findall(r'<(.*)>', record[1].strip())
     norm = norm[0] if norm else None
@@ -60,26 +69,29 @@ def trie(path_dicts: str) -> Node:
         current_node = root
 
         for i, char in enumerate(record.value):
-            node = find_in_children(current_node, char)
-            alias = record.alias.get(i,[]) if record.alias is not None else []
-            leaf = i == len(record.value)-1
-            special = record.special if leaf else None
-            norm = record.norm if leaf else None
+            node = find_in_children(current_node, char, precise=True)
+            record_alias = record.alias.get(i,[]) if record.alias is not None else []
+            record_leaf = i == len(record.value)-1
+            record_special = record.special if record_leaf else None
+            record_norm = record.norm if record_leaf else None
 
             if node is not None:
                 # update new info
-                if (not node.alias and alias) or (not node.special and special) or (not node.leaf and leaf):
+                if (not node.alias and record_alias) or (not node.special and record_special) or (not node.leaf and record_leaf):
                     old_node = node
-                    alias = alias if alias else old_node.alias
-                    special = special if special else old_node.special
-                    norm = norm if norm else old_node.norm
-                    leaf = leaf if leaf else node.leaf
+
+                    alias = record_alias if record_alias else old_node.alias
+                    special = record_special if record_special else old_node.special
+                    norm = record_norm if record_norm else old_node.norm
+                    leaf = record_leaf if record_leaf else old_node.leaf
+
                     node = Node(old_node.value, alias, special, norm, old_node.children, leaf)
+
                     current_node.children.remove(old_node)
                     del old_node
                     current_node.children.append(node)
             else:
-                node = Node(char, alias, special, norm, [], leaf)
+                node = Node(char, record_alias, record_special, record_norm, [], record_leaf)
                 current_node.children.append(node)
 
             current_node = node
@@ -123,14 +135,15 @@ def find(root: Node, text: Union[str, List[str]]) -> Tuple[str, int]:
             token = match_nodes[-1].norm
         else:
             token = ''.join([n.value for n in match_nodes])
-        # print([_.value for _ in match_nodes])
+        # print('match', [_.value for _ in match_nodes])
 
     return token, i
 
 
-def find_in_children(node: Node, char: str) -> bool:
+def find_in_children(node: Node, char: str, precise: bool=False) -> bool:
     for c in node.children:
-        if char == c.value or char in c.alias:
+        # print(c.value, c.alias, char, c.value==char, char in c.alias)
+        if char == c.value or (not precise and char in c.alias):
             return c
 
 

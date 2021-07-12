@@ -4,11 +4,16 @@ cnm, [ABU]
 wnm, [ABU]
 wc, [ABU]
 woc, [ABU]
-xswl
-v, [CTA-M], (0, (vvv,∨,∨,؆))
-vx, [CTA-M], (1, (x))]
+xswl, <笑死我了>
+v, [CTA-M], (0, (vv, vvv,∨,∨,؆))
+vx, [CTA-M], (1, (x))
 vip, [VIP]
+v587, <威武霸气>
+w, [CTA-M]
+wx, [CTA-M]
+wei, [CTA-M]
 wechat, [CTA-M]
+m, [CTA-M]
 q, [CTA-M]
 qq, [CTA-M]
 qqq, [CTA-M]
@@ -20,21 +25,19 @@ mai, [TRS]
 selling, [TRS]
 good
 morning
-thanks
 go
-gogogo
-gogogogo
-go go go
+gogogo, <go>
+gogogogo, <go>
+go go go, <go>
 ha
-hahaha
-hahahaha
+hahaha, <ha>
+hahahaha, <ha>
 hohoho
 yoyoyo
 hello
 world
 metoo
 welcome
-thankyou
 night
 comeon
 system
@@ -45,22 +48,33 @@ respect
 sorry
 hiall
 afternoon
-moring
-hihihi
+moring, <morning>
+hihihi, <hi>
 malaysia
 letsgo
 noproblem
-okthx
 google
 gogle
 account, [HAO]
 zzz, [EMJ]
 zzzzzz, [EMJ]
 addoil, <加油>
-okay
+okay, <ok>
+okthx, <ok>
 cctv
 em
-emmm
+emm, <em>
+emmm, <em>
+emmmm, <em>
 address
 call
 ziyuan, [RES]
+cdk, [RES-S]
+mengzhu, <盟主>
+thanks, <谢谢>
+thankyou, <谢谢>
+wait, <等等>
+roger, <收到>
+devil
+bingo
+ready

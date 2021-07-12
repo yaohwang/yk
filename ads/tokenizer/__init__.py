@@ -10,4 +10,5 @@ from .special import (
     special0,
     special1,
     special2,
+    specialrisk,
 )

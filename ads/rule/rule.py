@@ -10,6 +10,7 @@ from ..tokenizer import (
     special0,
     special1,
     special2,
+    specialrisk,
     tokenize,
 )
 
@@ -31,7 +32,10 @@ def rule_predict(tokens: List[str]) -> int:
 
         if tokens[0] in specialnum: candi = tokens[1]
         if tokens[1] in specialnum: candi = tokens[0]
-        if candi in special1 or candi in special2:
+
+        if candi == special.WHO:
+            return 0
+        elif candi in special1 or candi in special2:
             return 2
 
         if '加' == tokens[0]: candi = tokens[1]
@@ -42,10 +46,23 @@ def rule_predict(tokens: List[str]) -> int:
         if special.RES in tokens and '缺' in tokens:
             return 2
 
+        if special.RESS in tokens and special.HVN in tokens:
+            return 0
+
     elif 3 == len(tokens):
         if (special.RES in tokens and '缺' in tokens) \
         or (special.WHO in tokens and special.ADD in tokens):
             return 2
+
+        if (special.RESS in tokens and special.HVN in tokens and special.WHO in tokens):
+            return 0
+
+    if special.ADD in tokens:
+        if ('团' in tokens or '团长' in tokens):
+            if not bool(set(specialrisk) & set(tokens)):
+                return 0
+        # elif special.CTA in tokens or special.CTAM in tokens:
+        #     return 2
 
 
 
@@ -55,7 +72,7 @@ def rule_suspect(tokens: List[str]) -> bool:
         return token in specialnum \
             or token in special1 \
             or token in special2 \
-            or token in ['收','送', '领', '缺', '工作室', '挂', '带队']
+            or token in ['收','送', '领', '缺', '工作室', '挂', '带队', '+', '广告']
 
     for token in tokens:
         if suspect(token):
