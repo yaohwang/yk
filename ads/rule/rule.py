@@ -61,6 +61,8 @@ def has_money(x: List[str]) -> bool:
 
 
 def rule(tokens: List[str], x: str) -> int:
+    x = x.strip("'")
+
     pattern_defense = '^防守\[.*\].*的进攻:防守\*.*\*.*的进攻$'
     pattern_attack1 = '^进攻了\[.*\].*:进攻了\*.*\*.*$'
     pattern_attack2 = '^进攻了[0-9]{1,2}级.*:进攻了[0-9]{1,2}级.*$'
