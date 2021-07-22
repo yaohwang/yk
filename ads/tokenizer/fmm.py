@@ -80,6 +80,7 @@ def preprocess(text: str) -> str:
     text = cc.convert(text)
     text = normalize(text)
     text = re.sub('\s', '', text)
+    text = re.sub('\*{2,}', '', text)
 
     funcs = [
         extract_email,

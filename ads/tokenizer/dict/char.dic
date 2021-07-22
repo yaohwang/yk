@@ -1,3 +1,4 @@
+mlgb, [ABU]
 cnmlgb, [ABU]
 cnm, [ABU]
 # nm, [ABU]
@@ -5,17 +6,22 @@ wnm, [ABU]
 wc, [ABU]
 woc, [ABU]
 xswl, <笑死我了>
-v, [CTA-M], (0, (vv, vvv,∨,∨,؆))
+v, [CTA-M], (0, (∨,∨,؆))
+vv, [CTA-M], (1, (∨,∨,؆))
+vvv, [CTA-M], (2, (∨,∨,؆))
 vx, [CTA-M], (1, (x))
 vip, [VIP]
 v587, <威武霸气>
 w, [CTA-M]
+ww, [CTA-M]
+www, [CTA-M]
+wwww, [CTA-M]
 wx, [CTA-M]
 wei, [CTA-M]
 wechat, [CTA-M]
 m, [CTA-M]
-q, [CTA-M]
-qq, [CTA-M]
+q, [CTA-M], (0, (啾,秋))
+qq, [CTA-M], (1, (啾,秋))
 qqq, [CTA-M]
 qqid, [CTA-M]
 id, [CTA-M]
@@ -61,6 +67,7 @@ zzzzzz, [EMJ]
 addoil, <加油>
 okay, <ok>
 okthx, <ok>
+okthanks, <ok>
 cctv
 em
 emm, <em>
@@ -71,6 +78,7 @@ call
 ziyuan, [RES]
 cdk, [RES-S]
 mengzhu, <盟主>
+thank, <谢谢>
 thanks, <谢谢>
 thankyou, <谢谢>
 wait, <等等>
@@ -78,3 +86,5 @@ roger, <收到>
 devil
 bingo
 ready
+sosad
+sohai

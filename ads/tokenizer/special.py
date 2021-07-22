@@ -12,6 +12,7 @@ Special = namedtuple('Special', [
     'ABU',
     'CTAM', 'CTA',
     'ADD',
+    'AGR',
     'TRS', 'TRS3RD', 'TRSBHV', 'TRSSUS',
     'RES', 'RESS',
     'VIP',
@@ -36,6 +37,7 @@ defaults=[
     '[ABU]',
     '[CTA-M]', '[CTA]',
     '[ADD]',
+    '[AGR]',
     '[TRS]', '[TRS-3RD]', '[TRS-BHV]', '[TRS-SUS]',
     '[RES]', '[RES-S]',
     '[VIP]',
@@ -100,10 +102,10 @@ special1 = Special1()
 """
 
 Special2 = namedtuple('Special2', [
-	'LOC', 'CTAM', 'CTA', 'TRS', 'TRSBHV', 'TRSSUS', 'RES', 'RESS', 'VIP', 'PLG', 'MNY', 'URL', 'ADD', 'HAO', 'SALE', 'NEED',
+	'LOC', 'CTAM', 'CTA', 'TRS', 'TRSBHV', 'TRSSUS', 'RES', 'RESS', 'VIP', 'PLG', 'MNY', 'URL', 'ADD', 'AGR', 'HAO', 'SALE', 'NEED',
 ],
 defaults=[
-	special.LOC, special.CTAM, special.CTA, special.TRS, special.TRSBHV, special.TRSSUS, special.RES, special.RESS, special.VIP, special.PLG, special.MNY, special.URL, special.ADD, special.HAO, special.SALE, special.NEED,
+	special.LOC, special.CTAM, special.CTA, special.TRS, special.TRSBHV, special.TRSSUS, special.RES, special.RESS, special.VIP, special.PLG, special.MNY, special.URL, special.ADD, special.AGR, special.HAO, special.SALE, special.NEED,
 ])
 
 special2 = Special2()

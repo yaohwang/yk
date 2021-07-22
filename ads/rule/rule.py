@@ -23,7 +23,7 @@ def rule_predict(tokens: List[str]) -> int:
             return 0
         elif token in special1:
             return 1
-        elif token in special2 \
+        elif (token in special2 and special.RESS != token) \
         or token in ['收', '+', '十']:
             return 2
 
@@ -43,7 +43,8 @@ def rule_predict(tokens: List[str]) -> int:
         if candi in ['已', '如何', '欢迎', special.WHO]:
             return 2
 
-        if special.RES in tokens and '缺' in tokens:
+        if special.RES in tokens \
+        and ('缺' in tokens or special.HVN in tokens):
             return 2
 
         if special.RESS in tokens and special.HVN in tokens:

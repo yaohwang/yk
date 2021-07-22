@@ -69,8 +69,9 @@ X_train = df1['content'].tolist()
 y_train = df1['label'].tolist()
 
 path_data = path_root / 'dl-20210430-1-labeled.xlsx'
-columns={'text':'content', 'predict':'label'}
-df2 = load(path_data, rename_columns=columns)
+# columns={'text':'content', 'predict':'label'}
+# df2 = load(path_data, rename_columns=columns)
+df2 = load(path_data)
 X_train += df2['content'].tolist()
 y_train += df2['label'].tolist()
 
