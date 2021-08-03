@@ -19,13 +19,15 @@ def rule_predict(tokens: List[str]) -> int:
 
     if 1 == len(tokens):
         token = tokens[0]
-        if token in special0:
-            return 0
-        elif token in special1:
+        if token in special1:
             return 1
         elif (token in special2 and special.RESS != token) \
         or token in ['收', '+', '十']:
             return 2
+        elif special.HVN == token:
+            return 2
+        elif token in special0:
+            return 0
 
     elif 2 == len(tokens):
         candi = None
@@ -43,12 +45,39 @@ def rule_predict(tokens: List[str]) -> int:
         if candi in ['已', '如何', '欢迎', special.WHO]:
             return 2
 
+        if special.ADD in tokens and special.AGR in tokens:
+            return 2
+
+        if special.WHO in tokens and special.NEED in tokens:
+            return 2
+
+        if special.WHO == tokens[0] and special.HVN == tokens[1]:
+            return 2
+
         if special.RES in tokens \
         and ('缺' in tokens or special.HVN in tokens):
             return 2
 
         if special.RESS in tokens and special.HVN in tokens:
             return 0
+
+        if special.LOC in tokens \
+        and (
+            '给' in tokens  \
+            or '发' in tokens \
+            or special.HVN in tokens
+        ):
+            return 2
+
+        if '位置' in tokens \
+        and (
+            '给' in tokens  \
+            or '发' in tokens
+        ):
+            return 2
+
+        if special.MNY in tokens and special.HVN in tokens:
+            return 2
 
     elif 3 == len(tokens):
         if (special.RES in tokens and '缺' in tokens) \
@@ -73,7 +102,8 @@ def rule_suspect(tokens: List[str]) -> bool:
         return token in specialnum \
             or token in special1 \
             or token in special2 \
-            or token in ['收','送', '领', '缺', '工作室', '挂', '带队', '+', '广告']
+            or token in ['收','送', '领', '缺', '工作室', '挂', '带队', '+', '广告'] \
+            or token == special.HVN
 
     for token in tokens:
         if suspect(token):
