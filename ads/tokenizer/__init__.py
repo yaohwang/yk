@@ -1,6 +1,14 @@
 # encoding: utf-8
 
-from .tokenizer import (
+from .fmm import (
     tokenize,
-    convert
+)
+
+from .special import (
+    special,
+    specialnum,
+    special0,
+    special1,
+    special2,
+    specialrisk,
 )

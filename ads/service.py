@@ -9,7 +9,7 @@ import lightgbm as lgb
 from pathlib import Path
 from typing import Optional, Any, List, Tuple
 
-from .rule import rule, is_suspect
+from .rule import rule_predict, rule_suspect
 from .tokenizer import tokenize
 
 Model = Any
@@ -52,9 +52,9 @@ def predict(
 
     def _predict(x: str) -> int:
         tokens = tokenize(x)
-        y_pred = rule(tokens, x)
+        y_pred = rule_predict(tokens)
         if y_pred is None:
-            y_pred = predict_model(tokens, model_embedding_1, model_1) if is_suspect(tokens) else predict_model(tokens, model_embedding_2, model_2)
+            y_pred = predict_model(tokens, model_embedding_1, model_1) if rule_suspect(tokens) else predict_model(tokens, model_embedding_2, model_2)
         return y_pred
 
     def predict_model(x: str, model_embedding: ModelEmbedding, model: Model) -> int:
@@ -71,10 +71,21 @@ def predict(
 
 if __name__ == '__main__':
 
-	X = ['兄弟，来我的军团不',
-		 '资源爆满了',
-		 '加溦okltgo*同款手u*d就送4020',
+    X = ['兄弟，来我的军团不',
+         '资源爆满了',
+         '加溦okltgo*同款手u*d就送4020',
          '进攻了4级蛮族:进攻了4级蛮族']
 
-	y_pred = predict(X)
-	print(y_pred)
+    y_pred = predict(X)
+    print(y_pred)
+
+    from .train.dataset import df1, df2, df3, df4
+    df1['predict'] = predict(df1['content'].tolist())
+    df2['predict'] = predict(df2['content'].tolist())
+    df3['predict'] = predict(df3['content'].tolist())
+    df4['predict'] = predict(df4['content'].tolist())
+
+    df1.to_excel('dl.sgz2017-20210513-1-labeled-v1.xlsx')
+    df2.to_excel('dl-20210430-1-labeled-v1.xlsx')
+    df3.to_excel('tw.zhanguo-20210517-1-labeled-v1.xlsx')
+    df4.to_excel('dl-20210604-1-labeled-v1.xlsx')

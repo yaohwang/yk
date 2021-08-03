@@ -1,6 +1,6 @@
 # encoding: utf-8
 
 from .rule import (
-    rule,
-    is_suspect,
+    rule_predict,
+    rule_suspect,
 )
