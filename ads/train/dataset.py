@@ -64,15 +64,16 @@ path_root = Path('~/data/yk-zhanguo-chat').expanduser()
 """ model v3
 """
 path_data = path_root / 'dl.sgz2017-20210513-1-labeled.xlsx'
-data = load(path_data)
-X_train = data['content'].tolist()
-y_train = data['label'].tolist()
+df1 = load(path_data)
+X_train = df1['content'].tolist()
+y_train = df1['label'].tolist()
 
 path_data = path_root / 'dl-20210430-1-labeled.xlsx'
-columns={'text':'content', 'predict':'label'}
-data = load(path_data, rename_columns=columns)
-X_train += data['content'].tolist()
-y_train += data['label'].tolist()
+# columns={'text':'content', 'predict':'label'}
+# df2 = load(path_data, rename_columns=columns)
+df2 = load(path_data)
+X_train += df2['content'].tolist()
+y_train += df2['label'].tolist()
 
 # path_data = path_root / 'tw.zhanguo-20210517-1-labeled.xlsx'
 # data = load(path_data)
@@ -83,16 +84,18 @@ y_train += data['label'].tolist()
 """
 
 path_data = path_root / 'tw.zhanguo-20210517-1-labeled.xlsx'
-data = load(path_data)
-X_train += data['content'].tolist()
-y_train += data['label'].tolist()
+df3 = load(path_data)
+X_train += df3['content'].tolist()
+y_train += df3['label'].tolist()
 
 
 path_data = path_root / 'dl-20210604-1-labeled.xlsx'
 columns={'text':'content'}
-data = load(path_data, rename_columns=columns)
-X_test = data['content'].tolist()
-y_test = data['label'].tolist()
+df4 = load(path_data, rename_columns=columns)
+X_test = df4['content'].tolist()
+y_test = df4['label'].tolist()
+
+df = pd.concat([df1, df2, df3, df4])
 
 print(len(X_test))
 print(len(y_test))

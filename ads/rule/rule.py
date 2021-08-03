@@ -4,159 +4,117 @@ import re
 
 from typing import List
 
+from ..tokenizer import (
+    special,
+    specialnum,
+    special0,
+    special1,
+    special2,
+    specialrisk,
+    tokenize,
+)
 
-def one_in_text(keys: List[str], x: List[str]) -> bool:
-    # return bool(set(keys) & set(x))
-    for k in keys:
-        if k in x: return True
+
+def rule_predict(tokens: List[str]) -> int:
+
+    if 1 == len(tokens):
+        token = tokens[0]
+        if token in special1:
+            return 1
+        elif (token in special2 and special.RESS != token) \
+        or token in ['收', '+', '十']:
+            return 2
+        elif special.HVN == token:
+            return 2
+        elif token in special0:
+            return 0
+
+    elif 2 == len(tokens):
+        candi = None
+
+        if tokens[0] in specialnum: candi = tokens[1]
+        if tokens[1] in specialnum: candi = tokens[0]
+
+        if candi == special.WHO:
+            return 0
+        elif candi in special1 or candi in special2:
+            return 2
+
+        if '加' == tokens[0]: candi = tokens[1]
+        if '加' == tokens[1]: candi = tokens[0]
+        if candi in ['已', '如何', '欢迎', special.WHO]:
+            return 2
+
+        if special.ADD in tokens and special.AGR in tokens:
+            return 2
+
+        if special.WHO in tokens and special.NEED in tokens:
+            return 2
+
+        if special.WHO == tokens[0] and special.HVN == tokens[1]:
+            return 2
+
+        if special.RES in tokens \
+        and ('缺' in tokens or special.HVN in tokens):
+            return 2
+
+        if special.RESS in tokens and special.HVN in tokens:
+            return 0
+
+        if special.LOC in tokens \
+        and (
+            '给' in tokens  \
+            or '发' in tokens \
+            or special.HVN in tokens
+        ):
+            return 2
+
+        if '位置' in tokens \
+        and (
+            '给' in tokens  \
+            or '发' in tokens
+        ):
+            return 2
+
+        if special.MNY in tokens and special.HVN in tokens:
+            return 2
+
+    elif 3 == len(tokens):
+        if (special.RES in tokens and '缺' in tokens) \
+        or (special.WHO in tokens and special.ADD in tokens):
+            return 2
+
+        if (special.RESS in tokens and special.HVN in tokens and special.WHO in tokens):
+            return 0
+
+    if special.ADD in tokens:
+        if ('团' in tokens or '团长' in tokens):
+            if not bool(set(specialrisk) & set(tokens)):
+                return 0
+        # elif special.CTA in tokens or special.CTAM in tokens:
+        #     return 2
+
+
+
+def rule_suspect(tokens: List[str]) -> bool:
+
+    def suspect(token: str) -> bool:
+        return token in specialnum \
+            or token in special1 \
+            or token in special2 \
+            or token in ['收','送', '领', '缺', '工作室', '挂', '带队', '+', '广告'] \
+            or token == special.HVN
+
+    for token in tokens:
+        if suspect(token):
+            return True
     return False
-
-def all_in_text(keys: List[str], x: List[str]) -> bool:
-    # return bool((set(keys) & set(x)) == set(keys))
-    for k in keys:
-        if k not in x: return False
-    return True
-
-def has_num(x: List[str]) -> bool:
-    for _ in x:
-        if _.startswith('[NUM]'): return True
-    return False
-
-def has_resource(x: List[str]) -> bool:
-    return '[RES]' in x \
-        or '[RES-S]' in x
-
-def has_location(x: List[str]) -> bool:
-    return '[LOC]' in x
-
-def has_vip(x: List[str]) -> bool:
-    return '[VIP]' in x
-
-def has_add(x: List[str]) -> bool:
-    return '加' in x
-
-def has_who(x: List[str]) -> bool:
-    return '[WHO]' in x
-
-def has_recruit(x: List[str]) -> bool:
-    return '收' in x
-
-def has_contact(x: List[str]) -> bool:
-    return '[CTA]' in x \
-        or '[CTA-M]' in x \
-        or '私' in x \
-        or '聊' in x
-
-def has_account(x: List[str]) -> bool:
-    return '号' in x
-
-def has_plugin(x: List[str]) -> bool:
-    return '[PLG]' in x
-
-def has_game_other(x: List[str]) -> bool:
-    return '[OGM]' in x
-
-def has_money(x: List[str]) -> bool:
-    return '[MNY]' in x
-
-
-def rule(tokens: List[str], x: str) -> int:
-    x = x.strip("'")
-
-    pattern_defense = '^防守\[.*\].*的进攻:防守\*.*\*.*的进攻$'
-    pattern_attack1 = '^进攻了\[.*\].*:进攻了\*.*\*.*$'
-    pattern_attack2 = '^进攻了[0-9]{1,2}级.*:进攻了[0-9]{1,2}级.*$'
-    pattern_attack3 = '^进攻了.{1,5}[县村]:进攻了.{1,5}[县村]$'
-    pattern_biaoqingbao = '^biaoqingqxfz_321445821:[0-9]{1,3}$'
-
-    if re.match(pattern_defense, x) \
-    or re.match(pattern_attack1, x) \
-    or re.match(pattern_attack2, x) \
-    or re.match(pattern_attack3, x) \
-    or re.match(pattern_biaoqingbao, x):
-        return 0
-
-    pattern_url = '^http[s\\*]{1}://[a-z0-9\\./\\*\-]{1,}$'
-    pattern_contact = '^[a-z0-9\s\*\-:]{8,}$'
-    pattern_add = '^\+$'
-
-    if re.match(pattern_url, x) \
-    or re.match(pattern_add, x):
-    # or re.match(pattern_contact, x):
-        return 2
-
-    if ['[OGM]'] == tokens \
-    or '交易猫' in tokens:
-        return 1
-
-    if ['[CTA]'] == tokens \
-    or ['[TRS]'] == tokens \
-    or ['[CTA-M]'] == tokens \
-    or ['[RES]'] == tokens \
-    or (2 == len(tokens) and has_num(tokens) and has_resource(tokens)) \
-    or (2 == len(tokens) and has_num(tokens) and has_location(tokens)) \
-    or (2 == len(tokens) and has_num(tokens) and has_vip(tokens)) \
-    or (2 == len(tokens) and has_num(tokens) and has_add(tokens)) \
-    or (2 == len(set(tokens)) and has_who(tokens) and has_add(tokens)) \
-    or ['收'] == tokens \
-    or ['加'] == tokens \
-    or ['已', '加'] == tokens \
-    or ['如何', '加'] == tokens \
-    or ['出'] == tokens \
-    or ['号'] == tokens \
-    or ['欢迎', '加'] == tokens \
-    or ['欢迎', '[WHO]', '加'] == tokens \
-    or ['q'] == tokens \
-    or ['+'] == tokens \
-    or ['十'] == tokens \
-    or ['缺', '[RES]'] == tokens \
-    or ['有', '缺', '[RES]'] == tokens \
-    or ['不', '缺', '[RES]'] == tokens \
-    or ['看', '私'] == tokens \
-    or ['买'] == tokens \
-    or ['[VIP]'] == tokens \
-    or (1 == len(tokens) and tokens[0].startswith('[NUM]') and int(tokens[0][6:]) >= 8): 
-    # or (2 == len(set(tokens)) and has_who(tokens) and has_recruit(tokens)) \
-    # or '广告' in tokens \
-        return 2
-
-    if ['收', '[WHO]'] == tokens:
-        return 0
-
-
-
-def is_suspect(x: List[str]) -> bool:
-    return has_num(x) \
-        or has_contact(x) \
-        or has_resource(x) \
-        or has_account(x) \
-        or has_plugin(x) \
-        or has_game_other(x) \
-        or has_money(x) \
-        or has_vip(x) \
-        or one_in_text(['v', 'q', '微', '群', '扣', '加', '收', '出', '岀','送', '领', '缺', '工作室', '买', '钱', '挂'], x) \
-        or all_in_text(['企', '鹅'], x) \
-        or all_in_text(['兑', '换', '码'], x) \
-        or all_in_text(['礼', '包', '码'], x) \
-        or all_in_text(['福', '利'], x) \
-        or all_in_text(['带', '队'], x) \
-        or all_in_text(['资', '源'], x)
 
 
 if __name__ == '__main__':
-    # print(rule(['[NUM]-5', '[RES]']))
-    # print(rule(['[NUM]-3', '[LOC]']))
-    # print(rule(['[VIP]', '[NUM]-3']))
-    print(rule(['出'], '出'))
-    print(rule(['交易猫'], '交易猫'))
+    print(rule_predict(['[NUM]-5', '[RES]']))
+    print(rule_predict(['[NUM]-3', '[LOC]']))
+    print(rule_predict(['[VIP]', '[NUM]-3']))
 
-    # print(is_suspect(['岀', '赀', '縁', '[CTA]']))
-    # print(one_in_text(['v', 'q', '微', '群', '扣', '加', '收', '出', '送', '领'], ['岀', '赀', '縁', '[CTA]']))
-    # print(set(['v', 'q', '微', '群', '扣', '加', '收', '出', '送', '领']))
-    # print(set(['岀', '赀', '縁', '[CTA]']))
-    # print(set(['v', 'q', '微', '群', '扣', '加', '收', '出', '送', '领']) & set(['岀', '赀', '縁', '[CTA]']))
-
-    from tokenizer import tokenize
-    s = '进攻了弓弦村:进攻了弓弦村'
-    s = '进攻了2级乱军:进攻了2级乱军'
-    print(rule(tokenize(s), s))
+    print(rule_predict(tokenize('出')))
+    print(rule_predict(tokenize('交易猫')))
