@@ -21,6 +21,9 @@ uwsgi.pid
 .model
 data
 *.py.bak
+*.pid
+--ini
+*.out
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
